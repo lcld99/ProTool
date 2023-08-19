@@ -18,16 +18,13 @@ public class TrainScript : MonoBehaviour
     private void Awake()
     {
         // Initialize the properties if needed
-        if (trainProperties == null)
-        {
-            trainProperties = new TrainProperties
+        trainProperties ??= new TrainProperties
             {
                 passengers = 100,
                 speed = 5.0f,
                 name = "Taimanin",
                 // ... Initialize other properties
             };
-        }
     }
 
     // A method that allows you to access a property by its name
