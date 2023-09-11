@@ -7,7 +7,21 @@ public class ToolTipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExitH
 {
     public string content;
     public string header;
-    public void OnPointerEnter(PointerEventData eventData) { ToolTipSystem.Show(content, header); }
+    private IEnumerator cr;
+    public void OnPointerEnter(PointerEventData eventData) {
+        cr = Wait(0.5f);
+        StartCoroutine(cr);
+        //ToolTipSystem.Show(content, header); 
+    }
 
-    public void OnPointerExit(PointerEventData eventData) { ToolTipSystem.Hide(); }
+    public void OnPointerExit(PointerEventData eventData) {
+        StopCoroutine(cr);
+        ToolTipSystem.Hide(); 
+    }
+
+    public IEnumerator Wait(float waitTime)
+    {
+        yield return new WaitForSeconds(waitTime);
+        ToolTipSystem.Show(content, header);
+    }
 }
