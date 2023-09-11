@@ -1,29 +1,30 @@
+
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEditor;
 
-[CustomEditor(typeof(VariableObject))]
-public class VariableObjectEditor : Editor
+[CustomEditor(typeof(VariableCarPropertiesObject))]
+public class CarPropertiesEditor : Editor
 {
     private List<string> propertyNames = new List<string>();
 
     private void OnEnable()
     {
-        // Get the target VariableObject component
-        VariableObject variableObject = (VariableObject)target;
+        // Get the target VariableCarPropertiesObject component
+        VariableCarPropertiesObject variableObject = (VariableCarPropertiesObject)target;
 
         // Ensure the targetGameObject is assigned
         if (variableObject.targetGameObject != null)
         {
-            // Get the TrainScript component from the targetGameObject
-            TrainScript trainScript = variableObject.targetGameObject.GetComponent<TrainScript>();
+            // Get the CarPropertiesScript component from the targetGameObject
+            CarPropertiesScript carPropertiesScript = variableObject.targetGameObject.GetComponent<CarPropertiesScript>();
 
-            // Ensure the TrainScript component exists
-            if (trainScript != null)
+            // Ensure the CarPropertiesScript component exists
+            if (carPropertiesScript != null)
             {
-                // Retrieve the list of property names from TrainScript
+                // Retrieve the list of property names from CarPropertiesScript
                 propertyNames.Clear();
-                System.Type type = typeof(TrainProperties);
+                System.Type type = typeof(CarProperties);
                 foreach (var field in type.GetFields())
                 {
                     propertyNames.Add(field.Name);
@@ -37,8 +38,8 @@ public class VariableObjectEditor : Editor
         // Draw the default inspector fields
         DrawDefaultInspector();
 
-        // Get the target VariableObject component
-        VariableObject variableObject = (VariableObject)target;
+        // Get the target VariableCarPropertiesObject component
+        VariableCarPropertiesObject variableObject = (VariableCarPropertiesObject)target;
 
         // Ensure the targetGameObject is assigned
         if (variableObject.targetGameObject != null)
@@ -46,25 +47,22 @@ public class VariableObjectEditor : Editor
             // Ensure there are property names to display
             if (propertyNames.Count > 0)
             {
+
                 // Find the index of the selected property
                 int selectedIndex = propertyNames.IndexOf(variableObject.selectedPropertyName);
                 // Display a dropdown menu for selecting the property
                 selectedIndex = EditorGUILayout.Popup("Select Property", selectedIndex, propertyNames.ToArray());
-                if(selectedIndex > 0)
+                if(selectedIndex >= 0)
                 {
 
                     // Update the selected property based on the dropdown selection
                     variableObject.selectedPropertyName = propertyNames[selectedIndex];
                 }
-                else
-                {
-                    variableObject.selectedPropertyName = propertyNames[0];
-                }
 
             }
             else
             {
-                EditorGUILayout.LabelField("No properties found in TrainScript.");
+                EditorGUILayout.LabelField("No properties found in CarPropertiesScript.");
             }
         }
         else
@@ -73,4 +71,3 @@ public class VariableObjectEditor : Editor
         }
     }
 }
-

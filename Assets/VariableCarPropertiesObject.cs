@@ -1,35 +1,23 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEditor;
-using System;
 
-public class VariableObject : MonoBehaviour
+using UnityEngine;
+
+public class VariableCarPropertiesObject : MonoBehaviour
 {
     // Store the GameObject with multiple properties
     public GameObject targetGameObject;
     private GameObject parent;
 
     // Store the name of the selected property (exposed in the Inspector)
-    [NonSerialized]
     public string selectedPropertyName;
 
     // Function to get the value of the selected property
-
-    public string GetToolTipInfo()
-    {
-        object value = GetPropertyValue();
-        return selectedPropertyName+ ": " + value;
-    }
     public object GetPropertyValue()
     {
         if (targetGameObject != null && !string.IsNullOrEmpty(selectedPropertyName))
         {
-           
             if (targetGameObject != null)
             {
-                //Debug.Log(selectedPropertyName);
-                object property = targetGameObject.GetComponent<TrainScript>().GetPropertyValue(selectedPropertyName);
+                object property = targetGameObject.GetComponent<CarPropertiesScript>().GetPropertyValue(selectedPropertyName);
 
                 if (property != null)
                 {

@@ -12,15 +12,19 @@ public class Draggable : MonoBehaviour, IInitializePotentialDragHandler,  IPoint
     private RectTransform dropArea;
     private RectTransform childDropArea;
     private GameObject blockObject;
+    private Vector3 initialSize;
+    private Vector3 initialDropAreaSize;
     private void Awake()
     {
         m_RectTransform= GetComponent<RectTransform>();
+        initialSize = m_RectTransform.sizeDelta;
         m_canvasGroup= GetComponent<CanvasGroup>();
     }
 
     public void SetDropArea(RectTransform area)
     {
         this.dropArea= area;
+        this.initialDropAreaSize = area.sizeDelta;
     }
 
     public RectTransform GetDropArea()
@@ -28,15 +32,15 @@ public class Draggable : MonoBehaviour, IInitializePotentialDragHandler,  IPoint
         return this.dropArea;
     }
 
-    public void SetChildDropArea(RectTransform area)
-    {
-        this.childDropArea = area;
-    }
+    //public void SetChildDropArea(RectTransform area)
+    //{
+    //    this.childDropArea = area;
+    //}
 
-    public RectTransform GetChildDropArea()
-    {
-        return this.childDropArea;
-    }
+    //public RectTransform GetChildDropArea()
+    //{
+    //    return this.childDropArea;
+    //}
 
     public void SetGameObject(GameObject block)
     {
@@ -72,7 +76,7 @@ public class Draggable : MonoBehaviour, IInitializePotentialDragHandler,  IPoint
 
         if(dropArea != null)
         {
-            if (!RectTransformUtility.RectangleContainsScreenPoint(childDropArea, eventData.position, eventData.pressEventCamera))
+            if (!RectTransformUtility.RectangleContainsScreenPoint(dropArea, eventData.position, eventData.pressEventCamera))
             {
                 ResettingValue();
             }
@@ -97,6 +101,14 @@ public class Draggable : MonoBehaviour, IInitializePotentialDragHandler,  IPoint
             IResetable<bool> currentObj = blockObject.GetComponent<IResetable<bool>>();
             Debug.Log(currentObj);
             bool proceed = currentObj.ResetValue();
+            if(proceed) {
+                this.GetComponent<RectTransform>().sizeDelta = initialSize;
+                if(dropArea != null)
+                {
+                    dropArea.sizeDelta = initialDropAreaSize;
+                    dropArea = null;
+                }
+            }
         }
     }
 }
