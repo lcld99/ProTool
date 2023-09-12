@@ -1110,8 +1110,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 51b43d39cf6e1fe4db5e6074d51f705e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  content: pegue na minha e balance
-  header: Isso ai
+  header: Info
 --- !u!1 &637046080
 GameObject:
   m_ObjectHideFlags: 0

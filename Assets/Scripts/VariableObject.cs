@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEditor;
 using System;
 
-public class VariableObject : MonoBehaviour
+public class VariableObject : MonoBehaviour, IGetToolTipInfo<string>
 {
     // Store the GameObject with multiple properties
     public GameObject targetGameObject;
@@ -16,16 +16,16 @@ public class VariableObject : MonoBehaviour
 
     // Function to get the value of the selected property
 
-    public string GetToolTipInfo()
-    {
-        object value = GetPropertyValue();
-        return selectedPropertyName+ ": " + value;
-    }
+    //public string GetToolTipInfo()
+    //{
+    //    object value = GetPropertyValue();
+    //    return selectedPropertyName+ ": " + value;
+    //}
     public object GetPropertyValue()
     {
         if (targetGameObject != null && !string.IsNullOrEmpty(selectedPropertyName))
         {
-           
+
             if (targetGameObject != null)
             {
                 //Debug.Log(selectedPropertyName);
@@ -52,5 +52,11 @@ public class VariableObject : MonoBehaviour
         }
 
         return null;
+    }
+
+    public string ValueGetToolTipInfo()
+    {
+        object value = GetPropertyValue();
+        return selectedPropertyName + ": " + value;
     }
 }

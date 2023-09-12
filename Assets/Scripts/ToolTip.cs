@@ -33,7 +33,7 @@ public class ToolTip : MonoBehaviour
 
         if (pivotX < 0.5) //If mouse on left of screen move tooltip to right of cursor and vice vera
         {
-            finalPivotX = -0.03f;
+            finalPivotX = -0.055f;
         }
         else
         {
