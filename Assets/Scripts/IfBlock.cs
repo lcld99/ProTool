@@ -12,11 +12,13 @@ public class IfStatement : MonoBehaviour, IDropHandler, IExecutable<bool>, IHasN
     private RectTransform childDropArea;
 
     private GameObject droppedObject;
-    public TextMeshProUGUI compareText;
+    public IFBlockContainer compareText;
     public TextMeshProUGUI operatorText;
 
     //private GameObject parent;
     public GameObject nextObject; // Assign the next object in the chain in the Inspector
+
+    private string previousValueToCompare;
 
     // User-defined value to compare with the selected property (exposed in the Inspector)
     [SerializeField]
@@ -67,6 +69,8 @@ public class IfStatement : MonoBehaviour, IDropHandler, IExecutable<bool>, IHasN
 
     public void Awake()
     {
+        compareText.SetInititalValue(valueToCompare);
+        previousValueToCompare = valueToCompare;
         childDropArea = this.transform.Find("DropArea").transform as RectTransform;
         lineRenderer = gameObject.AddComponent<LineRenderer>();
         lineRenderer.startWidth = 0.1f; // Adjust the width here
@@ -76,7 +80,12 @@ public class IfStatement : MonoBehaviour, IDropHandler, IExecutable<bool>, IHasN
     void Update()
     {
         // Update the TextMeshPro component's text property with the current "life" value
-        compareText.text = valueToCompare;
+        if(previousValueToCompare != valueToCompare)
+        {
+            compareText.SetValue(valueToCompare);
+            previousValueToCompare = valueToCompare;
+        }
+
         operatorText.text = GetOperatorSymbol(condition);
         if (this != null && nextObject != null)
         {

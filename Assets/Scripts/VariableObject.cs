@@ -3,16 +3,24 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
 using System;
+using TMPro;
+using Unity.Loading;
+using UnityEngine.UI;
 
 public class VariableObject : MonoBehaviour, IGetToolTipInfo<string>
 {
     // Store the GameObject with multiple properties
-    public GameObject targetGameObject;
+    public TrainScript targetGameObject;
+    public TextMeshProUGUI displayInfo;
+    public LayoutElement layoutElement;
+    
     private GameObject parent;
-
+    private string previousProperty;
     // Store the name of the selected property (exposed in the Inspector)
-    [NonSerialized]
+    [SerializeField]
+    [HideInInspector]
     public string selectedPropertyName;
+
 
     // Function to get the value of the selected property
 
@@ -21,6 +29,16 @@ public class VariableObject : MonoBehaviour, IGetToolTipInfo<string>
     //    object value = GetPropertyValue();
     //    return selectedPropertyName+ ": " + value;
     //}
+
+    private void Update()
+    {
+        if (previousProperty != selectedPropertyName) // Check if the text has changed
+        {
+            displayInfo.text = selectedPropertyName; // Update the text element
+            previousProperty= selectedPropertyName;
+        }
+        layoutElement.enabled = (displayInfo.preferredWidth >= layoutElement.preferredWidth);
+    }
     public object GetPropertyValue()
     {
         if (targetGameObject != null && !string.IsNullOrEmpty(selectedPropertyName))
@@ -29,7 +47,7 @@ public class VariableObject : MonoBehaviour, IGetToolTipInfo<string>
             if (targetGameObject != null)
             {
                 //Debug.Log(selectedPropertyName);
-                object property = targetGameObject.GetComponent<TrainScript>().GetPropertyValue(selectedPropertyName);
+                object property = targetGameObject.GetPropertyValue(selectedPropertyName);
 
                 if (property != null)
                 {
@@ -52,6 +70,12 @@ public class VariableObject : MonoBehaviour, IGetToolTipInfo<string>
         }
 
         return null;
+    }
+
+    public void SetInitialPropertyName(string property)
+    {
+        this.selectedPropertyName = property;
+        //previousProperty = selectedPropertyName;
     }
 
     public string ValueGetToolTipInfo()

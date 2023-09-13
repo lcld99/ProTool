@@ -10,15 +10,18 @@ public class ToolTipTrigger : MonoBehaviour, IPointerEnterHandler, IPointerExitH
     public string header;
     private IEnumerator cr;
     private IGetToolTipInfo<string> getToolTipInfo;
+    private string previousValue;
 
-    private void Awake()
+    public void SetInitialContent()
     {
         getToolTipInfo = this.gameObject.GetComponent<IGetToolTipInfo<string>>();
+        content = getToolTipInfo.ValueGetToolTipInfo();
+        previousValue = content;
     }
 
     private void Update()
     {
-        if(getToolTipInfo!= null)
+        if(getToolTipInfo!= null && content != null)
         {
             content = getToolTipInfo.ValueGetToolTipInfo();
         }

@@ -6,7 +6,7 @@ using UnityEditor;
 public class VariableObjectEditor : Editor
 {
     private List<string> propertyNames = new List<string>();
-
+    private int selectedIndex = 0;
     private void OnEnable()
     {
         // Get the target VariableObject component
@@ -16,7 +16,7 @@ public class VariableObjectEditor : Editor
         if (variableObject.targetGameObject != null)
         {
             // Get the TrainScript component from the targetGameObject
-            TrainScript trainScript = variableObject.targetGameObject.GetComponent<TrainScript>();
+            TrainScript trainScript = variableObject.targetGameObject;
 
             // Ensure the TrainScript component exists
             if (trainScript != null)
@@ -47,18 +47,25 @@ public class VariableObjectEditor : Editor
             if (propertyNames.Count > 0)
             {
                 // Find the index of the selected property
-                int selectedIndex = propertyNames.IndexOf(variableObject.selectedPropertyName);
+                
+                selectedIndex = propertyNames.IndexOf(variableObject.selectedPropertyName);
                 // Display a dropdown menu for selecting the property
                 selectedIndex = EditorGUILayout.Popup("Select Property", selectedIndex, propertyNames.ToArray());
+
                 if(selectedIndex > 0)
                 {
 
                     // Update the selected property based on the dropdown selection
                     variableObject.selectedPropertyName = propertyNames[selectedIndex];
+                    variableObject.SetInitialPropertyName(propertyNames[selectedIndex]);
+                    variableObject.GetComponent<ToolTipTrigger>().SetInitialContent();
                 }
                 else
                 {
-                    variableObject.selectedPropertyName = propertyNames[0];
+                    //variableObject.selectedPropertyName = propertyNames[0];                   
+                    variableObject.SetInitialPropertyName(propertyNames[0]);
+                    variableObject.GetComponent<ToolTipTrigger>().SetInitialContent();
+
                 }
 
             }

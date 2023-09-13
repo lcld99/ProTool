@@ -12,15 +12,18 @@ public class ToolTip : MonoBehaviour
     public TextMeshProUGUI contentField;
     public LayoutElement layoutElement;
     public int characterWrapLimit;
+    private RectTransform rt;
 
     // Update is called once per frame
+
+    private void Awake()
+    {
+        rt = this.gameObject.GetComponent<RectTransform>();
+    }
     void Update()
     {
         if (Application.isEditor)
         {
-            int headerLength = headerField.text.Length;
-            int contentLength = contentField.text.Length;
-
             layoutElement.enabled = Math.Max(headerField.preferredWidth, contentField.preferredWidth) >= layoutElement.preferredWidth;
 
         }
@@ -50,7 +53,7 @@ public class ToolTip : MonoBehaviour
         }
 
 
-        this.gameObject.GetComponent<RectTransform>().pivot = new Vector2(finalPivotX, finalPivotY);
+        rt.pivot = new Vector2(finalPivotX, finalPivotY);
 
         this.transform.position = position;
 
@@ -69,8 +72,6 @@ public class ToolTip : MonoBehaviour
         }
 
         contentField.text = content;
-        int headerLength = headerField.text.Length;
-        int contentLength = contentField.text.Length;
 
         layoutElement.enabled = Math.Max(headerField.preferredWidth, contentField.preferredWidth) >= layoutElement.preferredWidth;
 
