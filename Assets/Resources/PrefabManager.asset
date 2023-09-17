@@ -14,4 +14,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   prefabs:
   - prefabName: IFBlock
-    prefab: {fileID: 3649669483415944457, guid: e5eca2ecf7c33a742afcf3d2ae702585, type: 3}
+    prefab: {fileID: 7674731358059722320, guid: 9e060e96c03631d47a69a4066ce50a04, type: 3}

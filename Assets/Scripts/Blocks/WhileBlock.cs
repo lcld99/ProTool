@@ -5,7 +5,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class IfStatement : MonoBehaviour, IDropHandler, IExecutable<bool>, IHasNextExecutable<bool>, IResetable<bool>
+public class WhileBlock : MonoBehaviour, IDropHandler, IExecutable<bool>, IHasNextExecutable<bool>, IResetable<bool>
 {
     // Reference to the VariableObject script
     private RectTransform childDropArea;
@@ -16,10 +16,15 @@ public class IfStatement : MonoBehaviour, IDropHandler, IExecutable<bool>, IHasN
 
     //private GameObject parent;
     public GameObject blockObject; // Assign the next object in the chain in the Inspector
-    public GameObject nextObject;
+    public GameObject nextObject; // Assign the next object in the chain in the Inspector
     private RectTransform truePathObject;
-    private IExecutable<bool> currentExecutable;
     public GameObject elseObject;
+    private IExecutable<bool> currentExecutable;
+
+    //Coroutine checks
+    private bool result;
+    private bool check;
+    private object propertyValue;
 
     private string previousValueToCompare;
 
@@ -32,6 +37,7 @@ public class IfStatement : MonoBehaviour, IDropHandler, IExecutable<bool>, IHasN
     private RectTransform rect1; //this object rect1
     private RectTransform rect2;
     private RectTransform rect3;
+
 
     public float curveAmount = 1.0f;
 
@@ -48,7 +54,7 @@ public class IfStatement : MonoBehaviour, IDropHandler, IExecutable<bool>, IHasN
         {
             if (int.TryParse(valueToCompare, out int intValue))
             {
-                return (float) intValue;
+                return (float)intValue;
             }
             else if (float.TryParse(valueToCompare, out float floatValue))
             {
@@ -78,13 +84,13 @@ public class IfStatement : MonoBehaviour, IDropHandler, IExecutable<bool>, IHasN
         lineRendererElsePath.gameObject.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
         lineRenderer.startWidth = 0.1f; // Adjust the width here
         lineRenderer.endWidth = 0.1f; // Adjust the width here
-        lineRenderer.startColor= Color.green;
+        lineRenderer.startColor = Color.green;
         lineRenderer.endColor = Color.green;
-        if(elseObject != null)
+        if (elseObject != null)
         {
             lineRendererElsePath.startWidth = 0.1f; // Adjust the width here
             lineRendererElsePath.endWidth = 0.1f; // Adjust the width here
-            lineRendererElsePath.startColor= Color.red;
+            lineRendererElsePath.startColor = Color.red;
             lineRendererElsePath.endColor = Color.red;
         }
     }
@@ -92,7 +98,7 @@ public class IfStatement : MonoBehaviour, IDropHandler, IExecutable<bool>, IHasN
     void Update()
     {
         // Update the TextMeshPro component's text property with the current "life" value
-        if(previousValueToCompare != valueToCompare)
+        if (previousValueToCompare != valueToCompare)
         {
             compareText.SetValue(valueToCompare);
             previousValueToCompare = valueToCompare;
@@ -105,18 +111,18 @@ public class IfStatement : MonoBehaviour, IDropHandler, IExecutable<bool>, IHasN
             rect2 = truePathObject;
 
 
-            Vector3 p1 = UtilityFunctions.GetStartingPosition(startFrom,rect1);
+            Vector3 p1 = UtilityFunctions.GetStartingPosition(startFrom, rect1);
             Vector3 p2 = UtilityFunctions.GetEndingPosition(endAt, rect2);
             Vector3[] points = UtilityFunctions.GenerateLinkPath(p1, p2, curveAmount);
             lineRenderer.positionCount = points.Length;
             lineRenderer.SetPositions(points);
 
-            if(elseObject != null)
+            if (elseObject != null)
             {
                 rect3 = elseObject.GetComponent<RectTransform>();
                 Vector3 p3 = UtilityFunctions.GetEndingPosition(endAt, rect3);
                 Vector3[] points2 = UtilityFunctions.GenerateLinkPath(p1, p3, curveAmount);
-                lineRendererElsePath.positionCount= points2.Length;
+                lineRendererElsePath.positionCount = points2.Length;
                 lineRendererElsePath.SetPositions(points2);
 
             }
@@ -153,7 +159,7 @@ public class IfStatement : MonoBehaviour, IDropHandler, IExecutable<bool>, IHasN
                         temp.SetGameObject(this.gameObject);
                         RectTransform droppedObjectRect = droppedObject.GetComponent<RectTransform>();
                         Vector3 scale = this.GetComponent<RectTransform>().localScale;
-                        childDropArea.sizeDelta = new Vector2(Mathf.Clamp(droppedObjectRect.sizeDelta.x, 40.0f, 60.0f), droppedObjectRect.sizeDelta.y); 
+                        childDropArea.sizeDelta = new Vector2(Mathf.Clamp(droppedObjectRect.sizeDelta.x, 40.0f, 60.0f), droppedObjectRect.sizeDelta.y);
                         droppedObjectRect.sizeDelta = new Vector2(Mathf.Clamp(droppedObjectRect.sizeDelta.x, 40.0f, 60.0f), droppedObjectRect.sizeDelta.y);
                     }
 
@@ -172,23 +178,28 @@ public class IfStatement : MonoBehaviour, IDropHandler, IExecutable<bool>, IHasN
     // Function to check the IF condition
     public bool Execute()
     {
-        if(droppedObject != null)
+        if (droppedObject != null)
         {
-            object propertyValue = droppedObject.GetComponent<VariableObject>().GetPropertyValue();
+            propertyValue = droppedObject.GetComponent<VariableObject>().GetPropertyValue();
             if (propertyValue != null)
             {
-                bool check = ResolveTypeBool(propertyValue, ComparisonValue, condition);
-                if (!check)
-                {
-                    blockObject = elseObject;
-                }
-                currentExecutable = GetNextExecutableWithinBlock();
-                UtilityFunctions.ExecuteNext(currentExecutable);
-                return true;                                 
+                check = ResolveTypeBool(propertyValue, ComparisonValue, condition);
+                Debug.Log(check);
+                StartCoroutine(WhileLoop((boolValue) => {
+                    result = boolValue; // Assign the result to the variable
+                    Debug.Log("Coroutine completed with result: " + boolValue);
+                    // Continue with the rest of the code that depends on the coroutine result
+                    // ...
+                    if(result) {
+                        Debug.Log("Passou");
+                    }
+                }));
+                nextObject = elseObject;
+                return true;
             }
             else
             {
-                throw new InvalidOperationException ("Invalid property value or property is not of type 'int'!");
+                throw new InvalidOperationException("Invalid property value or property is not of type 'int'!");
             }
 
         }
@@ -196,6 +207,50 @@ public class IfStatement : MonoBehaviour, IDropHandler, IExecutable<bool>, IHasN
         {
             throw new InvalidOperationException("Variable has not been assigned");
         }
+    }    
+
+    IEnumerator WhileLoop(Action<bool> callback)
+    {
+        Debug.Log("Co: " + check);
+        while (check)
+        {
+            // Execute your loop body code here
+            currentExecutable = GetNextExecutableWithinBlock();
+            UtilityFunctions.ExecuteNext(currentExecutable);
+            check = ResolveTypeBool(propertyValue, ComparisonValue, condition);
+            // Simulate a yield for the next frame
+            yield return null;
+        }
+
+        // Once the condition is false, continue with the rest of the code
+        callback.Invoke(check);
+    }
+
+
+    public void ExecuteNext()
+    {
+        // Execute the current object's logic
+        if (currentExecutable != null)
+        {
+            bool shouldProceed = currentExecutable.Execute();
+
+            // Check if the current executable implements IHasNextExecutable<bool>
+            if (shouldProceed && currentExecutable is IHasNextExecutable<bool> nextExecutable)
+            {
+                IExecutable<bool> nextObject = nextExecutable.GetNextExecutable();
+                if (nextObject != null)
+                {
+                    currentExecutable = nextObject;
+                    ExecuteNext();
+                }
+            }
+            else if (!shouldProceed)
+            {
+                throw new InvalidOperationException("Condition failed");
+            }
+        }
+
+
     }
 
     public bool ResolveTypeBool(object propertyValue, object comparisonValue, TypeOfCondition type)
@@ -222,9 +277,9 @@ public class IfStatement : MonoBehaviour, IDropHandler, IExecutable<bool>, IHasN
 
     private int CompareValues(object value1, object value2)
     {
-        if(value1 is int)
+        if (value1 is int)
         {
-            value1 = (float) (int) value1;
+            value1 = (float)(int)value1;
         }
 
         if (value1 is int intValue1 && value2 is float intValue2)
@@ -243,7 +298,6 @@ public class IfStatement : MonoBehaviour, IDropHandler, IExecutable<bool>, IHasN
 
         throw new ArgumentException("Unsupported value types");
     }
-
 
     public bool ResetValue()
     {
@@ -292,7 +346,7 @@ public class IfStatement : MonoBehaviour, IDropHandler, IExecutable<bool>, IHasN
                 return "";
         }
     }
-        
+
 }
 
 

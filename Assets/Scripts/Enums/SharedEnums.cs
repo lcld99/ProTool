@@ -18,3 +18,19 @@ public enum MoveDirection
     Left,
     Right
 }
+
+public enum StartPosition
+{
+    Top,
+    Right,
+    Bottom,
+    Left
+}
+
+public enum EndPosition
+{
+    Top,
+    Right,
+    Bottom,
+    Left
+}

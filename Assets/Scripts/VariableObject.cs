@@ -7,15 +7,27 @@ using TMPro;
 using Unity.Loading;
 using UnityEngine.UI;
 
+[System.Serializable]
+[CustomPropertyDrawer(typeof(GameObject))]
 public class VariableObject : MonoBehaviour, IGetToolTipInfo<string>
 {
     // Store the GameObject with multiple properties
-    public TrainScript targetGameObject;
+    [SerializeField]
+    public GameObject targetGameObject;
+
     public TextMeshProUGUI displayInfo;
     public LayoutElement layoutElement;
+
+
+    [SerializeField]
+    [HideInInspector]
+    public int selectedIndex = -1;
+
+    public IGetObject scriptTargetObject;
     
     private GameObject parent;
     private string previousProperty;
+
     // Store the name of the selected property (exposed in the Inspector)
     [SerializeField]
     [HideInInspector]
@@ -30,6 +42,27 @@ public class VariableObject : MonoBehaviour, IGetToolTipInfo<string>
     //    return selectedPropertyName+ ": " + value;
     //}
 
+    //private void OnValidate()
+    //{
+    //    // This code will be executed whenever the inspector values change,
+    //    // including when you assign a GameObject in the editor.
+    //    // Use 'yourGameObject' here.
+    //    scriptTargetObject = targetGameObject.GetComponent<IGetObject>().GetSelf();
+    //    Debug.Log(scriptTargetObject);
+    //}
+
+    void OnEnable()
+    {
+        if (targetGameObject != null)
+        {
+            OnGameObjectAssigned(targetGameObject);
+            Debug.Log("Variavel: " + selectedPropertyName + "Com valor: " + GetPropertyValue());
+            this.GetComponent<ToolTipTrigger>().SetInitialContent();
+        }
+    }
+
+
+
     private void Update()
     {
         if (previousProperty != selectedPropertyName) // Check if the text has changed
@@ -41,13 +74,13 @@ public class VariableObject : MonoBehaviour, IGetToolTipInfo<string>
     }
     public object GetPropertyValue()
     {
-        if (targetGameObject != null && !string.IsNullOrEmpty(selectedPropertyName))
+        if (scriptTargetObject != null && !string.IsNullOrEmpty(selectedPropertyName))
         {
 
-            if (targetGameObject != null)
+            if (scriptTargetObject != null)
             {
                 //Debug.Log(selectedPropertyName);
-                object property = targetGameObject.GetPropertyValue(selectedPropertyName);
+                object property = scriptTargetObject.GetPropertyValue(selectedPropertyName);
 
                 if (property != null)
                 {
@@ -72,10 +105,32 @@ public class VariableObject : MonoBehaviour, IGetToolTipInfo<string>
         return null;
     }
 
+    public void OnGameObjectAssigned(GameObject assignedObject)
+    {
+        // Custom code to execute when GameObject is assigned
+        if(scriptTargetObject == null) {
+            scriptTargetObject = assignedObject.GetComponent<IGetObject>().GetSelf();
+        }
+        else
+        {
+            //Debug.Log("called");
+        }
+        //Debug.Log(scriptTargetObject);
+        //Debug.Log("GameObject assigned!");
+    }
     public void SetInitialPropertyName(string property)
     {
         this.selectedPropertyName = property;
         //previousProperty = selectedPropertyName;
+    }
+
+    public List<string> GetProperties()
+    {
+        if (scriptTargetObject != null)
+        {
+            return scriptTargetObject.GetFieldNames();
+        }
+        return null;
     }
 
     public string ValueGetToolTipInfo()
@@ -83,4 +138,5 @@ public class VariableObject : MonoBehaviour, IGetToolTipInfo<string>
         object value = GetPropertyValue();
         return selectedPropertyName + ": " + value;
     }
+
 }

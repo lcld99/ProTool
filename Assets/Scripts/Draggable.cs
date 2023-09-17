@@ -16,6 +16,7 @@ public class Draggable : MonoBehaviour, IInitializePotentialDragHandler,  IPoint
     private Vector3 initialDropAreaSize;
     private void Awake()
     {
+        canvas = GetComponentInParent<Canvas>();
         m_RectTransform= GetComponent<RectTransform>();
         initialSize = m_RectTransform.sizeDelta;
         m_canvasGroup= GetComponent<CanvasGroup>();

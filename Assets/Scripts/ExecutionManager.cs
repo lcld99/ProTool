@@ -15,7 +15,7 @@ public class ExecutionManager : MonoBehaviour
         if (firstObject != null)
         {
             currentExecutable = firstObject.GetComponent<IExecutable<bool>>();
-            ExecuteNext();
+            UtilityFunctions.ExecuteNext(currentExecutable);
         }
     }
 

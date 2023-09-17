@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 [System.Serializable]
@@ -10,7 +11,7 @@ public class TrainProperties
     public string name;
     // ... Other properties you want to serialize
 }
-public class TrainScript : MonoBehaviour
+public class TrainScript : MonoBehaviour, IGetObject
 {
     [SerializeField]
     private TrainProperties trainProperties;
@@ -49,4 +50,19 @@ public class TrainScript : MonoBehaviour
         }
     }
 
+    public List<string> GetFieldNames()
+    {
+        List<string> propertyNames = new List<string>();
+        System.Type type = typeof(TrainProperties);
+        foreach (var field in type.GetFields())
+        {
+            propertyNames.Add(field.Name);
+        }
+        return propertyNames;
+    }
+
+    public IGetObject GetSelf()
+    {
+        return this;
+    }
 }
